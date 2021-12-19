@@ -9,7 +9,7 @@ def merge_pils_to_pdf(pils, path):
     with TemporaryDirectory() as prefix:
         for (i, pil) in enumerate(pils):
             name = os.path.join(prefix, f"out{i}.pdf")
-            pil.save(name)
+            pil.save(name, subsampling=0, quality=100)
             pdf.append(name)
-        pdf.write(path)        
+        pdf.write(path)
     return pdf

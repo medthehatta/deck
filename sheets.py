@@ -52,3 +52,7 @@ def entries(
         return entries(client, url, sheet, rng=sheet_range)
     else:
         return sheet_.get_all_records()
+
+
+def gsheet(id_):
+    return f"https://docs.google.com/spreadsheets/d/{id_}/edit#gid=0"

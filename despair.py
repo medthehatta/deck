@@ -1,9 +1,8 @@
-import sheets
-
 from entity_helpers import split_to_multiple_fields
-from entity_helpers import gdoc
 from layout import portrait_cards_on_letter
 from pdf import merge_pils_to_pdf
+import sheets
+from sheets import gsheet
 from svg import svg_interpolator
 
 
@@ -90,9 +89,9 @@ def multi_reward_threat(record):
 
 def sheet_mapping():
     return {
-        threat: gdoc("1_FvRdix-Ax7CjWtHCcB0zjaNkSP-vO_72CWD508FUJQ"),
-        spell: gdoc("1bci7naIabjSt-_53mzf7gE6nT36aF6VQLSkHarFfij4"),
-        card: gdoc("17kjLV9fPps12wCQGm9GVjGhs9gszPbe4Uqsn35MJ9ro"),
+        threat: gsheet("1_FvRdix-Ax7CjWtHCcB0zjaNkSP-vO_72CWD508FUJQ"),
+        spell: gsheet("1bci7naIabjSt-_53mzf7gE6nT36aF6VQLSkHarFfij4"),
+        card: gsheet("17kjLV9fPps12wCQGm9GVjGhs9gszPbe4Uqsn35MJ9ro"),
     }
 
 

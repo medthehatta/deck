@@ -3,6 +3,8 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from gspread.client import Client
+
 
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets.readonly",
@@ -31,7 +33,7 @@ def login(credential_file_path):
                 {"scopes": SCOPES, "creds": creds}, token,
             )
 
-    return creds
+    return Client(creds)
 
 
 def entries(

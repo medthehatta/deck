@@ -10,17 +10,24 @@ class Emitter:
         self.generator = generator
         self.client = client
 
-    def pdf_sample(output_path):
+    def render(self):
+        return self.generator.render(self.client)
+
+    def render_flat(self):
+        return sum(self.render().values(), [])
+
+    def pdf_sample(self, output_path):
+        # Render card types into separate PDFs
         # Join all the card types
-        rendered = sum(self.generator.render(self.client).values(), [])
+        rendered = self.render_flat()
         # Merge to one PDF
         return merge_pils_to_pdf(
             portrait_cards_on_letter(rendered),
             output_path,
         )
 
-    def sheet_image_sample(output_path, ext="png"):
-        rendered = sum(self.generator.render(self.client).values(), [])
+    def sheet_image_sample(self, output_path, ext="png"):
+        rendered = self.render_flat()
         pages = portrait_cards_on_letter(rendered)
         if not os.path.isdir(output_path):
             os.makedirs(output_path, exist_ok=True)

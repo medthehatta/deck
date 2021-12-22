@@ -1,4 +1,5 @@
 import os
+import sys
 
 import sheets
 
@@ -9,13 +10,14 @@ class Generator:
     def gsheet(sheet_id):
 
         def _gsheet(method):
-            method.__gsheet = sheet_id
+            method._gsheet = sheet_id
             return method
 
         return _gsheet
 
     def __init__(self, prefix=None):
-        self.prefix = prefix or os.path.dirname(os.path.abspath(__file__))
+        clsfile = sys.modules[self.__class__.__module__].__file__
+        self.prefix = prefix or os.path.dirname(os.path.abspath(clsfile))
 
     def relpath(self, path):
         return os.path.join(self.prefix, path)
@@ -31,10 +33,10 @@ class Generator:
 
     def sheet_mapping(self):
         return {
-            getattr(self, method): getattr(getattr(self, method), "__gsheet")
+            getattr(self, method): getattr(getattr(self, method), "_gsheet")
             for method in dir(self)
             if (
                 hasattr(self, method) and
-                hasattr(getattr(self, method), "__gsheet")
+                hasattr(getattr(self, method), "_gsheet")
             )
         }

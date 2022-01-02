@@ -17,6 +17,15 @@ def svg_interpolator(path):
     return _interpolate
 
 
+def file_svg_interpolator(path):
+    """Like file_interpolator, but inserts entire SVGs instead of strings."""
+
+    def _interpolate(record):
+        return render_svg_string(file=path, replacements=record)
+
+    return _interpolate
+
+
 def file_interpolator(path):
 
     with open(path) as f:

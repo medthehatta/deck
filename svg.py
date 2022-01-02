@@ -2,6 +2,8 @@ from svglib.svglib import SvgRenderer
 from lxml import etree
 from reportlab.graphics import renderPM
 
+from svglue import render_svg_string
+
 
 def svg_interpolator(path):
 

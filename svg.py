@@ -15,6 +15,17 @@ def svg_interpolator(path):
     return _interpolate
 
 
+def file_interpolator(path):
+
+    with open(path) as f:
+        template = f.read()
+
+    def _interpolate(record):
+        return template.format(**record)
+
+    return _interpolate
+
+
 def constant_svg(path):
     with open(path) as f:
         svg_data = f.read()

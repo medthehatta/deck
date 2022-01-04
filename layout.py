@@ -50,6 +50,54 @@ def layout_on_sheets_by_size(
     ]
 
 
+def layout_to_max_width(pils, max_width, xpadpx=0, ypadpx=0):
+    if not pils:
+        raise ValueError("Need to provide more than 0 pils")
+
+    found_max_width = max(pil.width for pil in pils)
+    if found_max_width > max_width:
+        print(f"WARN: Extending max_width from {max_width} to {found_max_width}")
+        max_width = found_max_width
+    max_possible_height = sum((pil.height + ypadpx) for pil in pils)
+
+    output = Image.new(
+        mode="RGB",
+        size=(max_width, max_possible_height),
+        color=(255, 255, 255),
+    )
+
+    xpos = 0
+    ypos = 0
+    next_ypos = 0
+
+    first = pils[0]
+    next_xpos = xpos + first.width + xpadpx
+    next_ypos = max(next_ypos, ypos + first.height + ypadpx)
+
+    output.paste(pils[0], box=(0, 0))
+
+    xpos = next_xpos
+
+    for pil in pils[1:]:
+        width = pil.width
+        height = pil.height
+
+        next_xpos = xpos + width + xpadpx
+
+        if next_xpos > max_width:
+            xpos = 0
+            ypos = next_ypos
+            next_ypos = ypos + height + ypadpx
+            next_xpos = width + xpadpx
+        else:
+            next_ypos = max(next_ypos, ypos + height + ypadpx)
+
+        output.paste(pil, box=(xpos, ypos))
+        xpos = next_xpos
+
+    return output
+
+
 def layout_pils(
     pils,
     num_width,

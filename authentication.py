@@ -31,7 +31,7 @@ class EmptyToken(AccessToken):
 class ApiKey(AccessToken):
     """A constant API key."""
 
-    def __init__(self, key, header_name):
+    def __init__(self, header_name, key):
         """Initialize the instance."""
         self.key = key
         self.header_name = header_name

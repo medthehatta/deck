@@ -3,6 +3,7 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+import gspread
 from gspread.client import Client
 
 
@@ -34,6 +35,10 @@ def login(credential_file_path):
             )
 
     return Client(creds)
+
+
+def service_login(service_account_file):
+    return gspread.service_account(filename=service_account_file)
 
 
 def entries(

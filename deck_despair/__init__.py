@@ -1,7 +1,14 @@
+import json
 import os
+from pathlib import Path
+
+import click
 
 from entity_helpers import split_to_multiple_fields
 from generator import Generator
+import sheets
+import pdf
+import tts
 from svg import svg_interpolator
 
 
@@ -84,3 +91,44 @@ class Despair(Generator):
         }
         new_record = {**record, **penalty_data, **reward_abbrev}
         return svg_interpolator(card_tpl)(new_record)
+
+
+@click.group()
+def despair():
+    """Produce despair decks."""
+
+
+@despair.command()
+@click.argument("deck_pdf", type=click.File("wb"))
+@click.argument("deck_tts_json", type=click.File("w"))
+def card(deck_pdf, deck_tts_json):
+    """Make a 'card' deck."""
+    gsheets = sheets.service_login("service-account.json")
+    deck = Despair().render_deck(gsheets, "card")
+    pdf.merge_pils_to_pdf(deck, deck_pdf)
+    deck_tts = tts.make_deck(deck)
+    json.dump(deck_tts, deck_tts_json)
+
+
+@despair.command()
+@click.argument("deck_pdf", type=click.File("wb"))
+@click.argument("deck_tts_json", type=click.File("w"))
+def spell(deck_pdf, deck_tts_json):
+    """Make a 'spell' deck."""
+    gsheets = sheets.service_login("service-account.json")
+    deck = Despair().render_deck(gsheets, "spell")
+    pdf.merge_pils_to_pdf(deck, deck_pdf)
+    deck_tts = tts.make_deck(deck)
+    json.dump(deck_tts, deck_tts_json)
+
+
+@despair.command()
+@click.argument("deck_pdf", type=click.File("wb"))
+@click.argument("deck_tts_json", type=click.File("w"))
+def threat(deck_pdf, deck_tts_json):
+    """Make a 'threat' deck."""
+    gsheets = sheets.service_login("service-account.json")
+    deck = Despair().render_deck(gsheets, "threat")
+    pdf.merge_pils_to_pdf(deck, deck_pdf)
+    deck_tts = tts.make_deck(deck)
+    json.dump(deck_tts, deck_tts_json)

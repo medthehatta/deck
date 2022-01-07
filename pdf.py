@@ -12,11 +12,11 @@ def merge_pdfs(pdf_paths, output):
     return pdf
 
 
-def merge_pils_to_pdf(pils, path):
+def merge_pils_to_pdf(pils, outfile):
     pdf_names = []
     with TemporaryDirectory() as prefix:
         for (i, pil) in enumerate(pils):
             name = os.path.join(prefix, f"out{i}.pdf")
             pil.save(name, subsampling=0, quality=100)
             pdf_names.append(name)
-        return merge_pdfs(pdf_names, path)
+        return merge_pdfs(pdf_names, outfile)

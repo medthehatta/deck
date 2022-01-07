@@ -32,6 +32,11 @@ class Imgur:
         data = {"type": "base64", "image": self._base64(pil)}
         return self.client.request("POST", "image", data=data)
 
+    def upload_pil_get_url(self, pil):
+        res = self.upload_pil(pil)
+        res.raise_for_status()
+        return res.json()["data"]["link"]
+
 
 def get_default():
     return Imgur(DEFAULT_IMGUR_CLIENT_ID)

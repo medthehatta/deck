@@ -7,10 +7,11 @@ import sheets
 class Generator:
 
     @staticmethod
-    def gsheet(sheet_id):
+    def gsheet(sheet_id, tab="Sheet 1"):
 
         def _gsheet(method):
             method._gsheet = sheet_id
+            method._gsheet_tab = tab
             return method
 
         return _gsheet
@@ -25,7 +26,8 @@ class Generator:
     def render_deck(self, sheets_client, func_name):
         func_names = [func.__name__ for func in self.sheet_mapping()]
         matches = [
-            (func, url) for (func, url) in self.sheet_mapping().items()
+            (func, (url, tab))
+            for (func, (url, tab)) in self.sheet_mapping().items()
             if func.__name__ == func_name
         ]
         if len(matches) == 0:
@@ -33,10 +35,10 @@ class Generator:
         elif len(matches) > 1:
             raise LookupError(f"Ambiguous {func_name} in {func_names}")
         else:
-            (func, url) = matches[0]
+            (func, (url, tab)) = matches[0]
             return [
                 func(x) for x in
-                sheets.entries(sheets_client, sheets.gsheet(url))
+                sheets.entries(sheets_client, sheets.gsheet(url), sheet=tab)
             ]
 
     def render_all(self, sheets_client):
@@ -50,7 +52,10 @@ class Generator:
 
     def sheet_mapping(self):
         return {
-            getattr(self, method): getattr(getattr(self, method), "_gsheet")
+            getattr(self, method): (
+                getattr(getattr(self, method), "_gsheet"),
+                getattr(getattr(self, method), "_gsheet_tab")
+            )
             for method in dir(self)
             if (
                 hasattr(self, method) and

@@ -44,6 +44,27 @@ def constant_svg(path):
     return lambda _: pil
 
 
+def interpolate_svg(
+    filepath=None,
+    string=None,
+    text_replacements=None,
+    svg_replacements=None,
+):
+    if not filepath and not string:
+        raise TypeError("Need to provide either 'filepath' or 'string'")
+
+    if filepath and not string:
+        with open(filepath, "r") as f:
+            string = f.read()
+
+    text_interpolated_string = string.format(**text_replacements)
+    image_interpolated_string = render_svg_string(
+        src=text_interpolated_string.encode("utf-8"),
+        replacements=svg_replacements,
+    )
+    return svg_string_to_pil(image_interpolated_string)
+
+
 def svg_string_to_pil(svg):
     root = etree.fromstring(svg.encode("utf-8"))
     doc = SvgRenderer("").render(root)

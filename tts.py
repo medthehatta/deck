@@ -151,7 +151,15 @@ def deck(face_url, back_url, num_cards, num_width=10, num_height=7):
     }
 
 
-def make_deck(face_pils, back_pil=None, back_pils=None):
+def layout(pils):
+    return layout_pils(pils, num_width=10, num_height=7)
+
+
+def layout_and_upload(pils):
+    return imgur.get_default().upload_pil_get_url(layout(pils))
+
+
+def make_deck_pils(face_pils, back_pil=None, back_pils=None):
     # If we don't provide a back, use a black card
     if not back_pil and not back_pils:
         first_face = face_pils[0]
@@ -165,17 +173,31 @@ def make_deck(face_pils, back_pil=None, back_pils=None):
     if back_pil and not back_pils:
         back_pils = [back_pil] * len(face_pils)
 
-    faces = layout_pils(
+    faces = layout(face_pils)
+    backs = layout(back_pils)
+    return {
+        "face": faces,
+        "back": backs,
+    }
+
+
+def make_deck_urls(face_pils, back_pil=None, back_pils=None):
+    deck_pils = make_deck_pils(
         face_pils,
-        num_width=10,
-        num_height=7,
+        back_pil=back_pil,
+        back_pils=back_pils,
     )
-    backs = layout_pils(
-        back_pils,
-        num_width=10,
-        num_height=7,
-    )
+    faces = deck_pils["face"]
+    backs = deck_pils["back"]
     imgr = imgur.get_default()
     face_url = imgr.upload_pil_get_url(faces)
     back_url = imgr.upload_pil_get_url(backs)
-    return deck(face_url, back_url, len(face_pils))
+    return {
+        "face": face_url,
+        "back": back_url,
+    }
+
+
+def make_deck(face_pils, back_pil=None, back_pils=None):
+    spec = make_deck_urls(face_pils, back_pil=back_pil, back_pils=back_pils)
+    return deck(spec["face"], spec["back"], len(face_pils))

@@ -151,6 +151,32 @@ def deck(face_url, back_url, num_cards, num_width=10, num_height=7):
     }
 
 
+def game(objects):
+    objects = objects or []
+    if not isinstance(objects, (list, tuple)):
+        objects = [objects]
+    return {
+        "SaveName": "",
+        "GameMode": "",
+        "Date": "",
+        "Gravity": 0.5,
+        "PlayArea": 0.5,
+        "GameType": "",
+        "GameComplexity": "",
+        "Tags": [],
+        "Table": "",
+        "Sky": "",
+        "Note": "",
+        "Rules": "",
+        "TabStates": {},
+        "ObjectStates": objects,
+        "LuaScript": "",
+        "LuaScriptState": "",
+        "XmlUI": "",
+        "VersionNumber": "",
+    }
+
+
 def layout(pils):
     return layout_pils(pils, num_width=10, num_height=7)
 

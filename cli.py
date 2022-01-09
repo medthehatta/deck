@@ -15,7 +15,7 @@ def cli():
 
 
 def emit_deck(rendered):
-    return tts.make_deck(**tts.mplex_face_back(rendered))
+    return tts.game(tts.make_deck(**tts.mplex_face_back(rendered)))
 
 
 def emit_urls(rendered):

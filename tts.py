@@ -181,6 +181,13 @@ def make_deck_pils(face_pils, back_pil=None, back_pils=None):
     }
 
 
+def mplex_face_back(both, face_key="faces", back_key="backs"):
+    return {
+        "face_pils": both[face_key],
+        "back_pils": both[back_key],
+    }
+
+
 def make_deck_urls(face_pils, back_pil=None, back_pils=None):
     deck_pils = make_deck_pils(
         face_pils,

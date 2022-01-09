@@ -65,7 +65,7 @@ def gsheet(id_):
     return f"https://docs.google.com/spreadsheets/d/{id_}/edit#gid=0"
 
 
-def google_sheet_reader(url, tab):
+def google_sheet_reader(url, tab="Sheet1"):
 
     def _google_sheet_reader():
         # FIXME: Ugh, configuring the sheets client is painful.

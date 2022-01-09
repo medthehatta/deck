@@ -10,6 +10,7 @@ import tts
 
 @click.group()
 def cli():
+    """Generate cards for game prototypes."""
     pass
 
 

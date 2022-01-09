@@ -58,6 +58,7 @@ def group(name):
 
 def attach_command(parent, command, name=None):
     if name:
+        command.name = name
         parent.add_command(command, name=name)
     else:
         parent.add_command(command)

@@ -10,18 +10,35 @@ from util import prefix
 relpath = prefix(__file__)
 
 
+# Use kwargs to configure...
 def rows(num_rows):
 
+    # A decorator...
     def _wrapper(func):
 
-        @wraps(func)
+        # That returns a function...
         def _wrapped(*args, **kwargs):
 
-            def _inner():
-                return func(*args, **kwargs)
-            _inner.rows = num_rows
+            # Which is identical to the wrapped one, if it is already
+            # configured with the rows (to prevent breakage if there is
+            # accidental double-decoration)
+            if hasattr(func, "rows"):
+                return func
 
-            return _inner
+            # Or which is almost the same...
+            else:
+
+                # ...except it:
+                # (1) is made into a thunk so it evaluates lazily,
+                # (2) the thunk gets a "rows" attribute added to it, saying how
+                # many rows tall it is.  Now row_layout() can check the number
+                # of rows the function consumes, THEN evaluate it to SVG.
+                @wraps(func)
+                def _inner():
+                    return func(*args, **kwargs)
+                _inner.rows = num_rows
+
+                return _inner
 
         return _wrapped
 

@@ -81,7 +81,7 @@ def populate_output_type(name, cmd):
             attach_command(game_group, cmd(deck), name=deckname)
 
 
-plugins = ["deck_despair", "deck_barcrawl"]
+plugins = ["deck_despair", "deck_barcrawl", "deck_bard"]
 
 
 deck_plugins = {

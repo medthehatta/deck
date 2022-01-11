@@ -7,7 +7,8 @@ from httprr import Requester
 from httprr import DefaultHandlers
 
 
-DEFAULT_IMGUR_CLIENT_ID = "54bdf86b7b696fe"
+#DEFAULT_IMGUR_CLIENT_ID = "54bdf86b7b696fe"
+DEFAULT_IMGUR_CLIENT_ID = "10123ac4cd0c5b5"
 
 
 def get_client_v3(client_id):

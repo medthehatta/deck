@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from functools import wraps
+from itertools import cycle
 
 from entity_helpers import split_to_multiple_fields
 from svg import empty_svg_string
@@ -46,8 +47,32 @@ def rows(num_rows):
 
 
 def row_layout(*rows):
+    # Config
+    layout_template = "row-layout.svg"
+    total_rows = 7
+
     replacements = {}
     current = 0
+
+    used_rows = sum(getattr(row, "rows", 1) for row in rows)
+
+    if used_rows > total_rows:
+        raise ValueError(
+            f"Too many rows!  Max is {total_rows}, but demanding {used_rows}!"
+        )
+    else:
+        missing = total_rows - used_rows
+
+    # Round-robin the missing rows backward through the fills if present.
+    # (Backward so there is more space toward the bottom, meaning more info at
+    # the top.)
+    # If there are no fills, the empty bottom rows will be left empty.
+    if fills := [row for row in rows if hasattr(row, "_is_fill")]:
+        fills_backward = cycle(reversed(fills))
+        while missing > 0:
+            fill = next(fills_backward)
+            fill.rows += 1
+            missing -= 1
 
     for row in rows:
         try:
@@ -55,23 +80,31 @@ def row_layout(*rows):
         except AttributeError:
             print(f"No height for {row}")
             height = 1
-        replacements[f"row{height}_{current}"] = row()
-        current += 1
+        if height == 0:
+            continue
+        if not hasattr(row, "_is_fill"):
+            replacements[f"row{height}_{current}"] = row()
+        current += height
 
     return interpolate_svg_to_string(
-        filepath=relpath("row-layout.svg"),
+        filepath=relpath(layout_template),
         svg_replacements=replacements,
     )
 
 
-def spacer(n):
+def fill(n=0):
 
-    def _spacer():
+    def _fill():
         return empty_svg_string()
 
-    _spacer.rows = n
+    _fill._is_fill = True
+    _fill.rows = n
+    if n:
+        _fill.__name__ = f"fill_min_{n}"
+    else:
+        _fill.__name__ = "fill"
 
-    return _spacer
+    return _fill
 
 
 @rows(1)

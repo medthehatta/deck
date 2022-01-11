@@ -6,6 +6,11 @@ from google.auth.transport.requests import Request
 import gspread
 from gspread.client import Client
 
+from util import prefix
+
+
+relpath = prefix(__file__)
+
 
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets.readonly",
@@ -70,7 +75,7 @@ def google_sheet_reader(url, tab="Sheet1"):
     def _google_sheet_reader():
         # FIXME: Ugh, configuring the sheets client is painful.
         # Just setting it as a constant from the file for now
-        client = service_login("service-account.json")
+        client = service_login(relpath("service-account.json"))
         return entries(client, url, sheet=tab)
 
     return _google_sheet_reader

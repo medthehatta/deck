@@ -7,6 +7,10 @@ from authentication import ApiKey
 from authentication import BasicAuth
 from httprr import Requester
 from httprr import DefaultHandlers
+from util import prefix
+
+
+relpath = prefix(__file__)
 
 
 def get_client_from_json(json_path):
@@ -53,4 +57,4 @@ class Image4io:
 def get_default():
     # FIXME: Ugh, configuring the client is painful.  Just setting it as a
     # constant from the file for now
-    return Image4io("image4io.json")
+    return Image4io(relpath("image4io.json"))

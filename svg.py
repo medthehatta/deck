@@ -5,6 +5,10 @@ from reportlab.graphics import renderPM
 from svglue import render_svg_string
 
 
+def empty_svg_string():
+    return "<svg></svg>"
+
+
 def svg_interpolator(path):
 
     with open(path) as f:
@@ -50,6 +54,9 @@ def interpolate_svg_to_string(
     text_replacements=None,
     svg_replacements=None,
 ):
+    text_replacements = text_replacements or {}
+    svg_replacements = svg_replacements or {}
+
     if not filepath and not string:
         raise TypeError("Need to provide either 'filepath' or 'string'")
 

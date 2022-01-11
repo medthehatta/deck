@@ -120,6 +120,10 @@ class Template(object):
         # fragment.
         elem.tag = USE_TAG
 
+        # Give it a new id in case we want to nest templates with duplicate ids
+        new_id = str(uuid4())
+        elem.set('id', new_id)
+
         ALLOWED_ATTRS = ('x', 'y')
         for attr in elem.attrib.keys():
             if not attr in ALLOWED_ATTRS:

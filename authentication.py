@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import base64
 from typing import Any
 
 
@@ -44,6 +45,25 @@ class ApiKey(AccessToken):
     def auth_headers(self):
         """Get a dict of authentication headers."""
         return {self.header_name: self.get()}
+
+
+class BasicAuth(AccessToken):
+    """Basic HTTP Authentication."""
+
+    def __init__(self, username, password):
+        """Initialize the instance."""
+        client_id = ":".join([username, password])
+        encoded = base64.b64encode(client_id.encode("utf-8"))
+        self.key = f"Basic {encoded.decode('utf-8')}"
+
+    def get(self):
+        """Get the token."""
+        return self.key
+
+    @property
+    def auth_headers(self):
+        """Get a dict of authentication headers."""
+        return {"Authorization": self.get()}
 
 
 @dataclass

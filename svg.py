@@ -44,7 +44,7 @@ def constant_svg(path):
     return lambda _: pil
 
 
-def interpolate_svg(
+def interpolate_svg_to_string(
     filepath=None,
     string=None,
     text_replacements=None,
@@ -58,15 +58,29 @@ def interpolate_svg(
             string = f.read()
 
     text_interpolated_string = string.format(**text_replacements)
-    image_interpolated_string = render_svg_string(
+    return render_svg_string(
         src=text_interpolated_string.encode("utf-8"),
         replacements=svg_replacements,
     )
-    return svg_string_to_pil(image_interpolated_string)
+
+
+def interpolate_svg(
+    filepath=None,
+    string=None,
+    text_replacements=None,
+    svg_replacements=None,
+):
+    return svg_string_to_pil(
+        interpolate_svg_to_string(
+            filepath=filepath,
+            string=string,
+            text_replacements=text_replacements,
+            svg_replacements=svg_replacements,
+        )
+    )
 
 
 def svg_string_to_pil(svg):
     root = etree.fromstring(svg.encode("utf-8"))
     doc = SvgRenderer("").render(root)
     return renderPM.drawToPIL(doc)
-

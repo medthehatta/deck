@@ -3,6 +3,8 @@ from hashlib import sha1
 from PIL import Image
 
 import imgur
+import image4io
+
 from layout import layout_pils
 
 
@@ -182,7 +184,7 @@ def layout(pils):
 
 
 def layout_and_upload(pils):
-    return imgur.get_default().upload_pil_get_url(layout(pils))
+    return image4io.get_default().upload_pil_get_url(layout(pils))
 
 
 def make_deck_pils(face_pils, back_pil=None, back_pils=None):
@@ -222,7 +224,7 @@ def make_deck_urls(face_pils, back_pil=None, back_pils=None):
     )
     faces = deck_pils["face"]
     backs = deck_pils["back"]
-    imgr = imgur.get_default()
+    imgr = image4io.get_default()
     face_url = imgr.upload_pil_get_url(faces)
     back_url = imgr.upload_pil_get_url(backs)
     return {

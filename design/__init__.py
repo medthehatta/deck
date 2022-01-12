@@ -11,6 +11,93 @@ from util import prefix
 relpath = prefix(__file__)
 
 
+def fill(n=0):
+
+    def _fill():
+        return empty_svg_string()
+
+    _fill.__is_fill = True
+    _fill.__size = n
+    if n:
+        _fill.__name__ = f"fill_min_{n}"
+    else:
+        _fill.__name__ = "fill"
+
+    return _fill
+
+
+def __size(obj):
+    return getattr(obj, "__size", 1)
+
+
+def __is_fill(obj):
+    return hasattr(obj, "__is_fill")
+
+
+def distribute(items, size, favor_left=True):
+    taken = sum(__size(x) for x in items)
+    missing = size - taken
+
+    if missing < 0:
+        raise ValueError(
+            f"Can only fit {size} items, but demanded {taken}"
+        )
+
+    if fills := [x for x in items if __is_fill(x)]:
+        fill_order = cycle(reversed(fills)) if favor_left else cycle(fills)
+        while missing > 0:
+            fill = next(fill_order)
+            fill.__size += 1
+            missing -= 1
+
+    result = {}
+    index = 0
+    for item in items:
+        if item in fills:
+            index += __size(item)
+            continue
+        else:
+            result[index] = item
+            index += __size(item)
+
+    return result
+
+
+def _interpose_fill(items):
+    for item in items[:-1]:
+        yield item
+        yield fill()
+    # Don't yield a fill after the last item
+    yield items[-1]
+
+
+def interpose_fill(items):
+    return list(_interpose_fill(items))
+
+
+def row_layout(*rows):
+    # Config
+    layout_template = "row-layout.svg"
+    total_rows = 7
+
+    row_positions = distribute(
+        rows,
+        size=total_rows,
+        # Favor putting elements on earlier rows and blank space on later rows
+        favor_left=True,
+    )
+
+    replacements = {
+        f"row{__size(item)}_{pos}": item()
+        for (pos, item) in row_positions.items()
+    }
+
+    return interpolate_svg_to_string(
+        filepath=relpath(layout_template),
+        svg_replacements=replacements,
+    )
+
+
 # Use kwargs to configure...
 def rows(num_rows):
 
@@ -23,7 +110,7 @@ def rows(num_rows):
             # Which is identical to the wrapped one, if it is already
             # configured with the rows (to prevent breakage if there is
             # accidental double-decoration)
-            if hasattr(func, "rows"):
+            if hasattr(func, "__size"):
                 return func
 
             # Or which is almost the same...
@@ -31,80 +118,20 @@ def rows(num_rows):
 
                 # ...except it:
                 # (1) is made into a thunk so it evaluates lazily,
-                # (2) the thunk gets a "rows" attribute added to it, saying how
-                # many rows tall it is.  Now row_layout() can check the number
-                # of rows the function consumes, THEN evaluate it to SVG.
+                # (2) the thunk gets a "__size" attribute added to it, saying
+                # how many rows tall it is.  Now row_layout() can check the
+                # number of rows the function consumes, THEN evaluate it to
+                # SVG.
                 @wraps(func)
                 def _inner():
                     return func(*args, **kwargs)
-                _inner.rows = num_rows
+                _inner.__size = num_rows
 
                 return _inner
 
         return _wrapped
 
     return _wrapper
-
-
-def row_layout(*rows):
-    # Config
-    layout_template = "row-layout.svg"
-    total_rows = 7
-
-    replacements = {}
-    current = 0
-
-    used_rows = sum(getattr(row, "rows", 1) for row in rows)
-
-    if used_rows > total_rows:
-        raise ValueError(
-            f"Too many rows!  Max is {total_rows}, but demanding {used_rows}!"
-        )
-    else:
-        missing = total_rows - used_rows
-
-    # Round-robin the missing rows backward through the fills if present.
-    # (Backward so there is more space toward the bottom, meaning more info at
-    # the top.)
-    # If there are no fills, the empty bottom rows will be left empty.
-    if fills := [row for row in rows if hasattr(row, "_is_fill")]:
-        fills_backward = cycle(reversed(fills))
-        while missing > 0:
-            fill = next(fills_backward)
-            fill.rows += 1
-            missing -= 1
-
-    for row in rows:
-        try:
-            height = row.rows
-        except AttributeError:
-            print(f"No height for {row}")
-            height = 1
-        if height == 0:
-            continue
-        if not hasattr(row, "_is_fill"):
-            replacements[f"row{height}_{current}"] = row()
-        current += height
-
-    return interpolate_svg_to_string(
-        filepath=relpath(layout_template),
-        svg_replacements=replacements,
-    )
-
-
-def fill(n=0):
-
-    def _fill():
-        return empty_svg_string()
-
-    _fill._is_fill = True
-    _fill.rows = n
-    if n:
-        _fill.__name__ = f"fill_min_{n}"
-    else:
-        _fill.__name__ = "fill"
-
-    return _fill
 
 
 @rows(1)
@@ -151,7 +178,7 @@ def edges_twothirds_1(left=None, middle=None, right=None):
 
 @rows(1)
 def five_rects_1(rects):
-    replacements = dict(zip((f"r{i}" for i in range(5)), rects))
+    replacements = {f"r{i}": rect for (i, rect) in rects.items()}
     return interpolate_svg_to_string(
         filepath=relpath("rows-1-five-rects.svg"),
         svg_replacements=replacements,
@@ -204,7 +231,7 @@ def text_left_right_2(left="", right=""):
 
 @rows(2)
 def five_rects_2(rects):
-    replacements = dict(zip((f"r{i}" for i in range(5)), rects))
+    replacements = {f"r{i}": rect for (i, rect) in rects.items()}
     return interpolate_svg_to_string(
         filepath=relpath("rows-2-five-rects.svg"),
         svg_replacements=replacements,

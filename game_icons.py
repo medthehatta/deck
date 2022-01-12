@@ -19,7 +19,7 @@ def svg(name):
     return DefaultHandlers.raise_or_return_text(res)
 
 
-def colored_svg(name, color_code="#f00"):
+def colored_svg(name, color_code="#fff"):
     svg_ = svg(name)
     color_code = f"#{color_code.lstrip('#')}"
     return svg_.replace('fill="#fff"', f'fill="{color_code}"')

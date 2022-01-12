@@ -185,6 +185,21 @@ def five_rects_1(rects):
     )
 
 
+def five_rects_centered_1(rect_list):
+    dist = distribute([fill(), *rect_list, fill()], size=5)
+    return five_rects_1(dist)
+
+
+def five_rects_left_1(rect_list):
+    dist = distribute([*rect_list, fill()], size=5)
+    return five_rects_1(dist)
+
+
+def five_rects_right_1(rect_list):
+    dist = distribute([fill(), *rect_list], size=5)
+    return five_rects_1(dist)
+
+
 def onefifth_centered_text_1(text):
     return interpolate_svg_to_string(
         filepath=relpath("rows-1-onefifth-centered-text.svg"),
@@ -236,6 +251,21 @@ def five_rects_2(rects):
         filepath=relpath("rows-2-five-rects.svg"),
         svg_replacements=replacements,
     )
+
+
+def five_rects_centered_2(rect_list):
+    dist = distribute([fill(), *rect_list, fill()], size=5)
+    return five_rects_2(dist)
+
+
+def five_rects_left_2(rect_list):
+    dist = distribute([*rect_list, fill()], size=5)
+    return five_rects_2(dist)
+
+
+def five_rects_right_2(rect_list):
+    dist = distribute([fill(), *rect_list], size=5)
+    return five_rects_2(dist)
 
 
 @rows(3)

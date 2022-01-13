@@ -1,3 +1,5 @@
+import diskcache
+from diskcache import Cache
 from svglib.svglib import SvgRenderer
 from lxml import etree
 from reportlab.graphics import renderPM
@@ -5,40 +7,11 @@ from reportlab.graphics import renderPM
 from svglue import render_svg_string
 
 
+cache = Cache(__name__)
+
+
 def empty_svg_string():
     return "<svg></svg>"
-
-
-def svg_interpolator(path):
-
-    with open(path) as f:
-        template = f.read()
-
-    def _interpolate(record):
-        svg = template.format(**record)
-        return svg_string_to_pil(svg)
-
-    return _interpolate
-
-
-def file_svg_interpolator(path):
-    """Like file_interpolator, but inserts entire SVGs instead of strings."""
-
-    def _interpolate(record):
-        return render_svg_string(file=path, replacements=record)
-
-    return _interpolate
-
-
-def file_interpolator(path):
-
-    with open(path) as f:
-        template = f.read()
-
-    def _interpolate(record):
-        return template.format(**record)
-
-    return _interpolate
 
 
 def constant_svg(path):
@@ -46,6 +19,14 @@ def constant_svg(path):
         svg_data = f.read()
     pil = svg_string_to_pil(svg_data)
     return lambda _: pil
+
+
+def _svgs_into_svg_string(txt, replacements):
+    return get_or_compute(
+        render_svg_string,
+        src=txt,
+        replacements=replacements,
+    )
 
 
 def interpolate_svg_to_string(
@@ -65,9 +46,9 @@ def interpolate_svg_to_string(
             string = f.read()
 
     text_interpolated_string = string.format(**text_replacements)
-    return render_svg_string(
-        src=text_interpolated_string.encode("utf-8"),
-        replacements=svg_replacements,
+    return _svgs_into_svg_string(
+        text_interpolated_string.encode("utf-8"),
+        svg_replacements,
     )
 
 
@@ -88,6 +69,31 @@ def interpolate_svg(
 
 
 def svg_string_to_pil(svg):
+    return get_or_compute(_svg_string_to_pil, svg)
+
+
+def _svg_string_to_pil(svg):
     root = etree.fromstring(svg.encode("utf-8"))
     doc = SvgRenderer("").render(root)
     return renderPM.drawToPIL(doc)
+
+
+# -- This whole bit should just be @cache.memoize on the relevant functions,
+# -- but unfortunately I need to break it out in case I have to debug cache
+# -- misses.  This is mostly just a copy/paste of the wrapper from memoize()
+# -- with simplifications thrown in for my use case.
+
+ENOVAL = object()
+
+def get_or_compute(func, *args, **kwargs):
+    """Wrapper for callable to cache arguments and return values."""
+    base = (func.__name__,)
+    key = diskcache.core.args_to_key(base, args, kwargs, False, [])
+    result = cache.get(key, default=ENOVAL, retry=True)
+
+    if result is ENOVAL:
+        result = func(*args, **kwargs)
+        # Save the result.  Expire it in one day
+        cache.set(key, result, expire=3600*24, retry=True)
+
+    return result

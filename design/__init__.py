@@ -145,6 +145,14 @@ def five_rects_right_1(rect_list):
     return five_rects_1(dist)
 
 
+def five_overlapping_rects_1(rects):
+    replacements = {f"r{i}": rect for (i, rect) in rects.items()}
+    return interpolate_svg_to_string(
+        filepath=relpath("rows-1-five-overlapping-rects.svg"),
+        svg_replacements=replacements,
+    )
+
+
 def onefifth_centered_text_1(text):
     return interpolate_svg_to_string(
         filepath=relpath("rows-1-onefifth-centered-text.svg"),

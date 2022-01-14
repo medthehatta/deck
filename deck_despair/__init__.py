@@ -1,6 +1,6 @@
 from entity_helpers import split_to_multiple_fields
 from game_icons import colored_svg as game_icon
-from generator import Deck
+from deck import Deck
 from sheets import google_sheet_reader
 from sheets import gsheet
 from svg import constant_svg

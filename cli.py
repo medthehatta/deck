@@ -4,7 +4,7 @@ import json
 
 import click
 
-from generator import Deck
+from deck import Deck
 import tts
 
 

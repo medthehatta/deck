@@ -11,27 +11,15 @@ from util import prefix
 relpath = prefix(__file__)
 
 
-def fill(n=0):
-
-    def _fill():
-        return empty_svg_string()
-
-    _fill.__is_fill = True
-    _fill.__size = n
-    if n:
-        _fill.__name__ = f"fill_min_{n}"
-    else:
-        _fill.__name__ = "fill"
-
-    return _fill
-
-
 def __size(obj):
-    return getattr(obj, "__size", 1)
+    if isinstance(obj, Sized):
+        return obj.size
+    else:
+        return 1
 
 
 def __is_fill(obj):
-    return hasattr(obj, "__is_fill")
+    return isinstance(obj, Fill)
 
 
 def distribute(items, size, favor_left=True):
@@ -47,7 +35,7 @@ def distribute(items, size, favor_left=True):
         fill_order = cycle(reversed(fills)) if favor_left else cycle(fills)
         while missing > 0:
             fill = next(fill_order)
-            fill.__size += 1
+            fill.size += 1
             missing -= 1
 
     result = {}
@@ -75,66 +63,27 @@ def interpose_fill(items):
     return list(_interpose_fill(items))
 
 
-def row_layout(*rows):
-    # Config
-    layout_template = "row-layout.svg"
-    total_rows = 7
+class Sized:
 
-    row_positions = distribute(
-        rows,
-        size=total_rows,
-        # Favor putting elements on earlier rows and blank space on later rows
-        favor_left=True,
-    )
-
-    replacements = {
-        f"row{__size(item)}_{pos}": item()
-        for (pos, item) in row_positions.items()
-    }
-
-    return interpolate_svg_to_string(
-        filepath=relpath(layout_template),
-        svg_replacements=replacements,
-    )
+    def __init__(self, inner, size=1):
+        self.size = size
+        if isinstance(inner, type(self)):
+            self.inner = inner.inner
+        else:
+            self.inner = inner
 
 
-# Use kwargs to configure...
-def rows(num_rows):
+class Fill(Sized):
 
-    # A decorator...
-    def _wrapper(func):
-
-        # That returns a function...
-        def _wrapped(*args, **kwargs):
-
-            # Which is identical to the wrapped one, if it is already
-            # configured with the rows (to prevent breakage if there is
-            # accidental double-decoration)
-            if hasattr(func, "__size"):
-                return func
-
-            # Or which is almost the same...
-            else:
-
-                # ...except it:
-                # (1) is made into a thunk so it evaluates lazily,
-                # (2) the thunk gets a "__size" attribute added to it, saying
-                # how many rows tall it is.  Now row_layout() can check the
-                # number of rows the function consumes, THEN evaluate it to
-                # SVG.
-                @wraps(func)
-                def _inner():
-                    return func(*args, **kwargs)
-                _inner.__size = num_rows
-
-                return _inner
-
-        return _wrapped
-
-    return _wrapper
+    def __init__(self, size=0):
+        self.size = size
+        self.inner = None
 
 
-@rows(1)
+def fill(n=0):
+    return Fill(size=n)
+
+
 def centered_text_1(text):
     return interpolate_svg_to_string(
         filepath=relpath("rows-1-centered-text.svg"),
@@ -142,7 +91,6 @@ def centered_text_1(text):
     )
 
 
-@rows(1)
 def centered_multi_text_1(text):
     record = split_to_multiple_fields(
         text,
@@ -157,7 +105,6 @@ def centered_multi_text_1(text):
 
 
 
-@rows(1)
 def text_left_right_1(left="", right=""):
     return interpolate_svg_to_string(
         filepath=relpath("rows-1-left-right-text.svg"),
@@ -165,7 +112,6 @@ def text_left_right_1(left="", right=""):
     )
 
 
-@rows(1)
 def edges_twothirds_1(left=None, middle=None, right=None):
     left = left or empty_svg_string()
     middle = middle or empty_svg_string()
@@ -176,7 +122,6 @@ def edges_twothirds_1(left=None, middle=None, right=None):
     )
 
 
-@rows(1)
 def five_rects_1(rects):
     replacements = {f"r{i}": rect for (i, rect) in rects.items()}
     return interpolate_svg_to_string(
@@ -214,7 +159,6 @@ def twothirds_centered_text_1(text):
     )
 
 
-@rows(2)
 def centered_text_2(text):
     return interpolate_svg_to_string(
         filepath=relpath("rows-2-centered-text.svg"),
@@ -222,7 +166,6 @@ def centered_text_2(text):
     )
 
 
-@rows(2)
 def centered_multi_text_2(text):
     record = split_to_multiple_fields(
         text,
@@ -236,7 +179,6 @@ def centered_multi_text_2(text):
     )
 
 
-@rows(2)
 def text_left_right_2(left="", right=""):
     return interpolate_svg_to_string(
         filepath=relpath("rows-2-left-right-text.svg"),
@@ -244,7 +186,6 @@ def text_left_right_2(left="", right=""):
     )
 
 
-@rows(2)
 def five_rects_2(rects):
     replacements = {f"r{i}": rect for (i, rect) in rects.items()}
     return interpolate_svg_to_string(
@@ -268,7 +209,6 @@ def five_rects_right_2(rect_list):
     return five_rects_2(dist)
 
 
-@rows(3)
 def rect_left_right_3(left, right):
     return interpolate_svg_to_string(
         filepath=relpath("rows-3-left-right-rect.svg"),
@@ -276,7 +216,6 @@ def rect_left_right_3(left, right):
     )
 
 
-@rows(3)
 def ten_rects_3(top_rects=None, bottom_rects=None):
     top_rects = top_rects or []
     bottom_rects = bottom_rects or []
@@ -312,4 +251,3 @@ def half_triple_text_3(top="", middle="", bottom=""):
         filepath=relpath("rows-3-half-text3.svg"),
         text_replacements=record,
     )
-

@@ -145,12 +145,30 @@ def five_rects_right_1(rect_list):
     return five_rects_1(dist)
 
 
-def five_overlapping_rects_1(rects):
+def five_overlapping_rects_horiz_1(rects):
     replacements = {f"r{i}": rect for (i, rect) in rects.items()}
     return interpolate_svg_to_string(
         filepath=relpath("rows-1-five-overlapping-rects.svg"),
         svg_replacements=replacements,
     )
+
+
+def repeated_icon_horiz_1(icon, times=1):
+    rects = distribute([icon]*times, size=5)
+    return five_overlapping_rects_horiz_1(rects)
+
+
+def five_overlapping_rects_vert_1(rects):
+    replacements = {f"r{i}": rect for (i, rect) in rects.items()}
+    return interpolate_svg_to_string(
+        filepath=relpath("rows-1-five-overlapping-rects-vert.svg"),
+        svg_replacements=replacements,
+    )
+
+
+def repeated_icon_vert_1(icon, times=1):
+    rects = distribute([icon]*times, size=5)
+    return five_overlapping_rects_vert_1(rects)
 
 
 def onefifth_centered_text_1(text):

@@ -16,6 +16,12 @@ class Deck:
     def _back(self, record):
         return self.back(record)
 
+    def preview_face(self):
+        return self._face(self.source()[0])
+
+    def preview_raw_face(self):
+        return self.face(self.source()[0])
+
     def render(self):
         records = self.source()
         return {

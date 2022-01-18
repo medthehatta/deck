@@ -32,9 +32,11 @@ def _svgs_into_svg_string(txt, replacements):
 def interpolate_svg_to_string(
     filepath=None,
     string=None,
+    literal_replacements=None,
     text_replacements=None,
     svg_replacements=None,
 ):
+    literal_replacements = literal_replacements or {}
     text_replacements = text_replacements or {}
     svg_replacements = svg_replacements or {}
 
@@ -44,6 +46,9 @@ def interpolate_svg_to_string(
     if filepath and not string:
         with open(filepath, "r") as f:
             string = f.read()
+
+    for (lit_src, lit_sub) in literal_replacements.items():
+        string = string.replace(lit_src, lit_sub)
 
     text_interpolated_string = string.format(**text_replacements)
     return _svgs_into_svg_string(
@@ -55,6 +60,7 @@ def interpolate_svg_to_string(
 def interpolate_svg(
     filepath=None,
     string=None,
+    literal_replacements=None,
     text_replacements=None,
     svg_replacements=None,
 ):
@@ -62,6 +68,7 @@ def interpolate_svg(
         interpolate_svg_to_string(
             filepath=filepath,
             string=string,
+            literal_replacements=literal_replacements,
             text_replacements=text_replacements,
             svg_replacements=svg_replacements,
         )

@@ -60,6 +60,65 @@ def board(image_url):
         "XmlUI": "",
     }
 
+@mkguid
+def tile(image_url):
+    return {
+      "Name": "Custom_Token",
+      "Transform": {
+        "posX": 0.0,
+        "posY": 1.0,
+        "posZ": -1.0,
+        "rotX": 0.0,
+        "rotY": 180.0,
+        "rotZ": 180.0,
+        "scaleX": 1.0,
+        "scaleY": 1.0,
+        "scaleZ": 1.0
+      },
+      "Nickname": "",
+      "Description": "",
+      "GMNotes": "",
+      "AltLookAngle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "ColorDiffuse": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
+      },
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": False,
+      "Grid": True,
+      "Snap": True,
+      "IgnoreFoW": False,
+      "MeasureMovement": False,
+      "DragSelectable": True,
+      "Autoraise": True,
+      "Sticky": True,
+      "Tooltip": True,
+      "GridProjection": False,
+      "HideWhenFaceDown": False,
+      "Hands": False,
+      "CustomImage": {
+        "ImageURL": image_url,
+        "ImageSecondaryURL": "",
+        "ImageScalar": 1.0,
+        "WidthScale": 0.0,
+        "CustomToken": {
+          "Thickness": 0.1,
+          "MergeDistancePixels": 15.0,
+          "StandUp": False,
+          "Stackable": True
+        }
+      },
+      "LuaScript": "",
+      "LuaScriptState": "",
+      "XmlUI": ""
+    }
+
 
 @mkguid
 def card(card_id):

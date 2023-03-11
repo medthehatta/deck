@@ -20,7 +20,7 @@ def get_client_v3(client_id):
 
 class Imgur:
 
-    def __init__(self, client_id, fmt="JPEG"):
+    def __init__(self, client_id, fmt="PNG"):
         self.client = get_client_v3(client_id)
         self.fmt = fmt
 

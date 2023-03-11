@@ -70,7 +70,7 @@ def tile(image_url):
         "posZ": -1.0,
         "rotX": 0.0,
         "rotY": 180.0,
-        "rotZ": 180.0,
+        "rotZ": 0.0,
         "scaleX": 1.0,
         "scaleY": 1.0,
         "scaleZ": 1.0

@@ -61,7 +61,7 @@ def board(image_url):
     }
 
 @mkguid
-def tile(image_url):
+def token(image_url):
     return {
       "Name": "Custom_Token",
       "Transform": {

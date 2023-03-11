@@ -60,8 +60,63 @@ def board(image_url):
         "XmlUI": "",
     }
 
+
 @mkguid
-def token(image_url):
+def bag_of(objects):
+    return {
+      "Name": "Bag",
+      "Transform": {
+	"posX": 0.0,
+	"posY": 0.0,
+	"posZ": 0.0,
+	"rotX": 0.0,
+	"rotY": 0.0,
+	"rotZ": 0.0,
+	"scaleX": 1.0,
+	"scaleY": 1.0,
+	"scaleZ": 1.0
+      },
+      "Nickname": "",
+      "Description": "",
+      "GMNotes": "",
+      "AltLookAngle": {
+	"x": 0.0,
+	"y": 0.0,
+	"z": 0.0
+      },
+      "ColorDiffuse": {
+	"r": 0.7058823,
+	"g": 0.366520882,
+	"b": 0.0
+      },
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": False,
+      "Grid": True,
+      "Snap": True,
+      "IgnoreFoW": False,
+      "MeasureMovement": False,
+      "DragSelectable": True,
+      "Autoraise": True,
+      "Sticky": True,
+      "Tooltip": True,
+      "GridProjection": False,
+      "HideWhenFaceDown": False,
+      "Hands": False,
+      "MaterialIndex": -1,
+      "MeshIndex": -1,
+      "Bag": {
+	"Order": 0
+      },
+      "LuaScript": "",
+      "LuaScriptState": "",
+      "XmlUI": "",
+      "ContainedObjects": objects,
+    }
+
+
+@mkguid
+def token(image_url, nickname=""):
     return {
       "Name": "Custom_Token",
       "Transform": {
@@ -75,7 +130,7 @@ def token(image_url):
         "scaleY": 1.0,
         "scaleZ": 1.0
       },
-      "Nickname": "",
+      "Nickname": nickname,
       "Description": "",
       "GMNotes": "",
       "AltLookAngle": {

@@ -10,6 +10,8 @@ from svglue import render_svg_string
 
 cache = Cache(__name__)
 
+__CACHE_DISABLED = False
+
 
 def empty_svg_string():
     return "<svg></svg>"
@@ -96,6 +98,9 @@ ENOVAL = object()
 
 def get_or_compute(func, *args, **kwargs):
     """Wrapper for callable to cache arguments and return values."""
+    if __CACHE_DISABLED:
+        return func(*args, **kwargs)
+
     base = (func.__name__,)
     key = diskcache.core.args_to_key(base, args, kwargs, False, [])
     result = cache.get(key, default=ENOVAL, retry=True)

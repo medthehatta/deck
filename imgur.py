@@ -3,8 +3,12 @@ from io import BytesIO
 
 
 from authentication import ApiKey
+from diskcache import Cache
 from httprr import Requester
 from httprr import DefaultHandlers
+
+
+cache = Cache(__name__)
 
 
 DEFAULT_IMGUR_CLIENT_ID = "54bdf86b7b696fe"
@@ -29,9 +33,13 @@ class Imgur:
         pil.save(buffered, format=self.fmt)
         return base64.b64encode(buffered.getvalue())
 
+    @cache.memoize()
+    def _do_request(self, data):
+        return self.client.request("POST", "image", data=data)
+
     def upload_pil(self, pil):
         data = {"type": "base64", "image": self._base64(pil)}
-        return self.client.request("POST", "image", data=data)
+        return self._do_request(data)
 
     def upload_pil_get_url(self, pil):
         res = self.upload_pil(pil)

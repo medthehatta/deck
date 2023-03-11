@@ -118,7 +118,7 @@ def layout_pils(
     total_height = height * num_height + ypad_ * num_width
 
     output = Image.new(
-        mode="RGB",
+        mode="RGBA",
         size=(total_width, total_height),
         color=(255, 255, 255),
     )

@@ -11,3 +11,4 @@ pypdf2
 diskcache
 click
 click-web
+cairosvg

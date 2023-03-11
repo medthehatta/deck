@@ -1,8 +1,9 @@
+from io import BytesIO
+
 import diskcache
 from diskcache import Cache
-from svglib.svglib import SvgRenderer
-from lxml import etree
-from reportlab.graphics import renderPM
+import cairosvg.surface
+from PIL import Image
 
 from svglue import render_svg_string
 
@@ -80,9 +81,10 @@ def svg_string_to_pil(svg):
 
 
 def _svg_string_to_pil(svg):
-    root = etree.fromstring(svg.encode("utf-8"))
-    doc = SvgRenderer("").render(root)
-    return renderPM.drawToPIL(doc)
+    tree = cairosvg.surface.Tree(bytestring=svg.encode("utf-8"))
+    f = BytesIO()
+    cairosvg.surface.PNGSurface(tree, f, dpi=96).finish()
+    return Image.open(f)
 
 
 # -- This whole bit should just be @cache.memoize on the relevant functions,

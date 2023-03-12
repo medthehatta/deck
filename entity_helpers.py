@@ -27,7 +27,3 @@ def split_to_multiple_fields(
         )
     else:
         return {**default, **populated}
-
-
-def gdoc(id_):
-    return f"https://docs.google.com/spreadsheets/d/{id_}/edit#gid=0"

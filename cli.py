@@ -1,3 +1,4 @@
+import glob
 import importlib
 import json
 import pkgutil
@@ -83,7 +84,7 @@ def populate_output_type(name, cmd):
             attach_command(game_group, cmd(deck), name=deckname)
 
 
-plugins = ["deck_despair", "deck_barcrawl", "deck_bard"]
+plugins = glob.glob("deck_*")
 
 
 deck_plugins = {

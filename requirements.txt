@@ -12,3 +12,4 @@ diskcache
 click
 click-web
 cairosvg
+uwsgi

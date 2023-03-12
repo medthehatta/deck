@@ -1,4 +1,5 @@
 from io import BytesIO
+import os
 
 import diskcache
 from diskcache import Cache
@@ -10,7 +11,7 @@ from svglue import render_svg_string
 
 cache = Cache(__name__)
 
-__CACHE_DISABLED = False
+__CACHE_DISABLED = os.environ.get("DECK_SVG_CACHE_DISABLED", 0)
 
 
 def empty_svg_string():

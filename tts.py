@@ -2,9 +2,6 @@ from hashlib import sha1
 
 from PIL import Image
 
-import imgur
-import image4io
-
 from layout import layout_pils
 
 
@@ -304,14 +301,6 @@ def game(objects):
     }
 
 
-def layout(pils):
-    return layout_pils(pils, num_width=10, num_height=7)
-
-
-def layout_and_upload(pils):
-    return image4io.get_default().upload_pil_get_url(layout(pils))
-
-
 def make_deck_pils(face_pils, back_pil=None, back_pils=None):
     # If we don't provide a back, use a black card
     if not back_pil and not back_pils:
@@ -326,38 +315,9 @@ def make_deck_pils(face_pils, back_pil=None, back_pils=None):
     if back_pil and not back_pils:
         back_pils = [back_pil] * len(face_pils)
 
-    faces = layout(face_pils)
-    backs = layout(back_pils)
+    faces = layout_pils(face_pils, num_width=10, num_height=7)
+    backs = layout_pils(back_pils, num_width=10, num_height=7)
     return {
-        "face": faces,
-        "back": backs,
+        "faces": faces,
+        "backs": backs,
     }
-
-
-def mplex_face_back(both, face_key="faces", back_key="backs"):
-    return {
-        "face_pils": both[face_key],
-        "back_pils": both[back_key],
-    }
-
-
-def make_deck_urls(face_pils, back_pil=None, back_pils=None):
-    deck_pils = make_deck_pils(
-        face_pils,
-        back_pil=back_pil,
-        back_pils=back_pils,
-    )
-    faces = deck_pils["face"]
-    backs = deck_pils["back"]
-    imgr = image4io.get_default()
-    face_url = imgr.upload_pil_get_url(faces)
-    back_url = imgr.upload_pil_get_url(backs)
-    return {
-        "face": face_url,
-        "back": back_url,
-    }
-
-
-def make_deck(face_pils, back_pil=None, back_pils=None):
-    spec = make_deck_urls(face_pils, back_pil=back_pil, back_pils=back_pils)
-    return deck(spec["face"], spec["back"], len(face_pils))

@@ -7,10 +7,7 @@ import click
 
 from deck import Deck
 from deck import Tokens
-from mancer_tts import tts_deck
-from mancer_tts import tts_deck_urls
-from mancer_tts import tts_tokens
-from mancer_tts import tts_token_urls
+from mancer import mancer_pil
 import tts
 
 
@@ -21,17 +18,17 @@ def cli():
 
 
 def emit_deck_json(deck):
-    return tts.game(tts_deck(deck))
+    return tts.game(deck.tts_json(uploader=mancer_pil))
 
 
 def emit_deck_urls(deck):
-    return tts_deck_urls(deck)
+    return deck.sheet_urls(uploader=mancer_pil)
 
 
 def url_maker_command(deck):
 
     def _card_maker():
-        print(json.dumps(emit_deck_urls(deck)))
+        print(json.dumps(deck.sheet_urls(uploader=mancer_pil)))
 
     return click.command()(_card_maker)
 

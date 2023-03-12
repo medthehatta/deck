@@ -1,10 +1,15 @@
 import importlib
-import pkgutil
 import json
+import pkgutil
 
 import click
 
 from deck import Deck
+from deck import Tokens
+from mancer_tts import tts_deck
+from mancer_tts import tts_deck_urls
+from mancer_tts import tts_tokens
+from mancer_tts import tts_token_urls
 import tts
 
 
@@ -14,19 +19,18 @@ def cli():
     pass
 
 
-def emit_deck(rendered):
-    return tts.game(tts.make_deck(**tts.mplex_face_back(rendered)))
+def emit_deck_json(deck):
+    return tts.game(tts_deck(deck))
 
 
-def emit_urls(rendered):
-    return tts.make_deck_urls(**tts.mplex_face_back(rendered))
+def emit_deck_urls(deck):
+    return tts_deck_urls(deck)
 
 
 def url_maker_command(deck):
 
     def _card_maker():
-        rendered = deck.render()
-        print(json.dumps(emit_urls(rendered)))
+        print(json.dumps(emit_deck_urls(deck)))
 
     return click.command()(_card_maker)
 
@@ -34,8 +38,7 @@ def url_maker_command(deck):
 def json_maker_command(deck):
 
     def _card_maker():
-        rendered = deck.render()
-        print(json.dumps(emit_deck(rendered)))
+        print(json.dumps(emit_deck_json(deck)))
 
     return click.command()(_card_maker)
 
@@ -45,8 +48,7 @@ def json_file_maker_command(deck):
     @click.command()
     @click.argument("outfile", type=click.File("w"))
     def _card_maker(outfile: click.File):
-        rendered = deck.render()
-        result = emit_deck(rendered)
+        result = emit_deck_json(deck)
         json.dump(result, outfile)
 
     return _card_maker

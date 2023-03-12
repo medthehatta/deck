@@ -3,12 +3,13 @@ from dataclasses import dataclass
 import sys
 
 
-@dataclass
 class Deck:
 
-    face: callable
-    back: callable
-    source: callable
+    def __init__(self, face, back, source, name=None):
+        self.face = face
+        self.back = back
+        self.source = source
+        self.name = name
 
     def _face(self, record):
         return self.face(record)
@@ -34,3 +35,10 @@ class Deck:
 
     def render_backs(self):
         return [self._back(record) for record in self.source()]
+
+    def names(self):
+        records = self.source()
+        if self.name is None:
+            return ["" for _ in records]
+        else:
+            return [self.name(record) for record in records]

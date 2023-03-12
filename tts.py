@@ -176,7 +176,7 @@ def token(image_url, nickname=""):
 
 
 @mkguid
-def card(card_id):
+def card(card_id, nickname=""):
     return {
         "Name": "Card",
         "Transform": {
@@ -190,7 +190,7 @@ def card(card_id):
             "scaleY": 1.0,
             "scaleZ": 1.0,
         },
-        "Nickname": "",
+        "Nickname": nickname,
         "Description": "",
         "GMNotes": "",
         "ColorDiffuse": {"r": 1.0, "g": 1.0, "b": 1.0,},
@@ -215,9 +215,20 @@ def card(card_id):
 
 
 @mkguid
-def deck(face_url, back_url, num_cards, num_width=10, num_height=7):
+def deck(
+    face_url,
+    back_url,
+    num_cards,
+    card_names=None,
+    num_width=10,
+    num_height=7,
+):
     deckids = list(range(100, 100 + num_cards))
-    objects = [card(i) for i in deckids]
+    if card_names is None:
+        card_names = ["" for _ in deckids]
+    objects = [
+        card(i, nickname=name) for (name, i) in zip(card_names, deckids)
+    ]
     return {
         "Name": "DeckCustom",
         "Transform": {

@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import sys
 
 from svg import svg_string_to_pil
+import tts
 
 
 class Deck:
@@ -45,6 +46,31 @@ class Deck:
         else:
             return [self.name(record) for record in records]
 
+    def sheet_urls(self, uploader):
+        rendered = self.render()
+        pils = tts.make_deck_pils(
+            face_pils=rendered["faces"],
+            back_pils=rendered["backs"],
+        )
+        front_url = uploader([pils["faces"]])[0]
+        back_url = uploader([pils["backs"]])[0]
+        return {
+            "faces": front_url,
+            "backs": back_url,
+        }
+
+    def tts_json(self, uploader):
+        rendered = self.render()
+        names = self.names()
+        num = len(rendered["faces"])
+        pils = tts.make_deck_pils(
+            face_pils=rendered["faces"],
+            back_pils=rendered["backs"],
+        )
+        front_url = uploader([pils["faces"]])[0]
+        back_url = uploader([pils["backs"]])[0]
+        return tts.deck(front_url, back_url, num_cards=num, card_names=names)
+
 
 class Tokens:
 
@@ -72,6 +98,19 @@ class Tokens:
             return ["" for _ in records]
         else:
             return [self.name(record) for record in records]
+
+    def image_urls(self, uploader):
+        pils = self.render()
+        names = self.names()
+        return uploader(pils)
+
+    def tts_json(self, uploader):
+        pils = self.render()
+        names = self.names()
+        urls = uploader(pils)
+        return tts.bag_of([
+            tts.token(url, nickname=name) for (name, url) in zip(names, urls)
+        ])
 
 
 class SvgDeck(Deck):

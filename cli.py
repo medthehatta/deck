@@ -25,28 +25,57 @@ def emit_deck_urls(deck):
     return deck.sheet_urls(uploader=mancer_pils)
 
 
+def emit_token_json(token):
+    return tts.game(token.tts_json(uploader=mancer_pils))
+
+
+def emit_token_urls(token):
+    return token.image_urls(uploader=mancer_pils)
+
+
 def url_maker_command(deck):
 
+    if isinstance(deck, Deck):
+        emitter = deck.sheet_urls
+    elif isinstance(deck, Tokens):
+        emitter = deck.image_urls
+    else:
+        raise TypeError(f"Unrecognized type: {type(deck)}")
+
     def _card_maker():
-        print(json.dumps(deck.sheet_urls(uploader=mancer_pils)))
+        print(json.dumps(emitter(uploader=mancer_pils)))
 
     return click.command()(_card_maker)
 
 
 def json_maker_command(deck):
 
+    if isinstance(deck, Deck):
+        emitter = emit_deck_json
+    elif isinstance(deck, Tokens):
+        emitter = emit_token_json
+    else:
+        raise TypeError(f"Unrecognized type: {type(deck)}")
+
     def _card_maker():
-        print(json.dumps(emit_deck_json(deck)))
+        print(json.dumps(emitter(deck)))
 
     return click.command()(_card_maker)
 
 
 def json_file_maker_command(deck):
 
+    if isinstance(deck, Deck):
+        emitter = emit_deck_json
+    elif isinstance(deck, Tokens):
+        emitter = emit_token_json
+    else:
+        raise TypeError(f"Unrecognized type: {type(deck)}")
+
     @click.command()
     @click.argument("outfile", type=click.File("w"))
     def _card_maker(outfile: click.File):
-        result = emit_deck_json(deck)
+        result = emitter(deck)
         json.dump(result, outfile)
 
     return _card_maker
@@ -72,7 +101,7 @@ def populate_output_type(name, cmd):
         candidates = ((x, getattr(plugin, x)) for x in dir(plugin))
         decks = (
             (deckname, deck) for (deckname, deck) in candidates
-            if isinstance(deck, Deck)
+            if isinstance(deck, (Deck, Tokens))
         )
 
         game_group = attach_command(top, group(gamename))

@@ -8,11 +8,12 @@ import tts
 
 class Deck:
 
-    def __init__(self, face, back, source, name=None):
+    def __init__(self, face, back, source, name=None, scale=1.0):
         self.face = face
         self.back = back
         self.source = source
         self.name = name
+        self.scale = scale
 
     def _face(self, record):
         return self.face(record)
@@ -69,15 +70,22 @@ class Deck:
         )
         front_url = uploader([pils["faces"]])[0]
         back_url = uploader([pils["backs"]])[0]
-        return tts.deck(front_url, back_url, num_cards=num, card_names=names)
+        return tts.deck(
+            front_url,
+            back_url,
+            num_cards=num,
+            card_names=names,
+            scale=self.scale,
+        )
 
 
 class Tokens:
 
-    def __init__(self, face, source, name=None):
+    def __init__(self, face, source, name=None, scale=1.0):
         self.face = face
         self.source = source
         self.name = name
+        self.scale = scale
 
     def _face(self, record):
         return self.face(record)
@@ -109,7 +117,12 @@ class Tokens:
         names = self.names()
         urls = uploader(pils)
         return tts.bag_of([
-            tts.token(url, nickname=name) for (name, url) in zip(names, urls)
+            tts.token(
+                url,
+                nickname=name,
+                scale=self.scale,
+            )
+            for (name, url) in zip(names, urls)
         ])
 
 

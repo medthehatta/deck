@@ -113,7 +113,7 @@ def bag_of(objects):
 
 
 @mkguid
-def token(image_url, nickname=""):
+def token(image_url, nickname="", scale=1.0):
     return {
       "Name": "Custom_Token",
       "Transform": {
@@ -123,9 +123,9 @@ def token(image_url, nickname=""):
         "rotX": 0.0,
         "rotY": 180.0,
         "rotZ": 0.0,
-        "scaleX": 1.0,
+        "scaleX": scale,
         "scaleY": 1.0,
-        "scaleZ": 1.0
+        "scaleZ": scale,
       },
       "Nickname": nickname,
       "Description": "",
@@ -173,7 +173,7 @@ def token(image_url, nickname=""):
 
 
 @mkguid
-def card(card_id, nickname=""):
+def card(card_id, nickname="", scale=1.0):
     return {
         "Name": "Card",
         "Transform": {
@@ -183,9 +183,9 @@ def card(card_id, nickname=""):
             "rotX": 0.0,
             "rotY": 180.0,
             "rotZ": 180.0,
-            "scaleX": 1.0,
+            "scaleX": scale,
             "scaleY": 1.0,
-            "scaleZ": 1.0,
+            "scaleZ": scale,
         },
         "Nickname": nickname,
         "Description": "",
@@ -219,12 +219,14 @@ def deck(
     card_names=None,
     num_width=10,
     num_height=7,
+    scale=1.0,
 ):
     deckids = list(range(100, 100 + num_cards))
     if card_names is None:
         card_names = ["" for _ in deckids]
     objects = [
-        card(i, nickname=name) for (name, i) in zip(card_names, deckids)
+        card(i, nickname=name, scale=scale)
+        for (name, i) in zip(card_names, deckids)
     ]
     return {
         "Name": "DeckCustom",

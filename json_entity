@@ -1,7 +1,4 @@
 #!/bin/bash
-deck=""
-entity=""
-
 while [ "$#" -gt 0 ]; do
     case "$1" in
         -h|--help)
@@ -9,27 +6,28 @@ while [ "$#" -gt 0 ]; do
             exit 0
             ;;
         -l|--list)
-            list_entities=1
-            shift
-            ;;
-        -L|--list-decks)
-            list_decks=1
+            list=1
             shift
             ;;
         *)
-            break
+            if [ -z "$deck" ]; then
+                deck="$1"
+                shift
+            elif [ -z "$entity" ]; then
+                entity="$1"
+                shift
+            else
+                break
+            fi
             ;;
     esac
 done
 
-deck="$1"
-entity="$2"
 
-
-if [ -n "$list_decks" ]; then
-    python ./cli.py json-file --help
-elif [ -n "$list_entities" ]; then
-    python ./cli.py json-file "$deck" --help
+if [ -n "$list" ] && [ -n "$deck" ]; then
+    python -m cli json-file "$deck" --help
+elif [ -n "$list" ]; then
+    python -m cli json-file --help
 else
-    python ./cli.py json-file "$deck" "$entity" "/var/www/files/xfer/${deck}_${entity}.json"
+    python -m cli json-file "$deck" "$entity" "/var/www/files/xfer/${deck}_${entity}.json"
 fi

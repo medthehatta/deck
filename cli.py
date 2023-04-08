@@ -1,14 +1,20 @@
 import glob
 import importlib
 import json
+import os
 import pkgutil
+import sys
 
 import click
 
 from deck import Deck
 from deck import Tokens
 from mancer import mancer_pils
+from util import prefix
 import tts
+
+
+relpath = prefix(__file__)
 
 
 @click.group()
@@ -110,11 +116,18 @@ def populate_output_type(name, cmd):
             attach_command(game_group, cmd(deck), name=deckname)
 
 
-plugins = glob.glob("deck_*")
+deck_dir = relpath("../decks")
+
+
+sys.path.append(deck_dir)
+plugins = [
+    os.path.basename(os.path.dirname(name))
+    for name in glob.glob(os.path.join(deck_dir, "*", "__init__.py"))
+]
 
 
 deck_plugins = {
-    name.replace("deck_", ""): importlib.import_module(name)
+    name: importlib.import_module(name)
     for name in plugins
 }
 

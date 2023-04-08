@@ -1,0 +1,35 @@
+#!/bin/bash
+deck=""
+entity=""
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            sed -n '/^while/,/^done/p' "$0" | grep -oP '\S+(?=\)$)'
+            exit 0
+            ;;
+        -l|--list)
+            list_entities=1
+            shift
+            ;;
+        -L|--list-decks)
+            list_decks=1
+            shift
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+deck="$1"
+entity="$2"
+
+
+if [ -n "$list_decks" ]; then
+    python ./cli.py json-file --help
+elif [ -n "$list_entities" ]; then
+    python ./cli.py json-file "$deck" --help
+else
+    python ./cli.py json-file "$deck" "$entity" "/var/www/files/xfer/${deck}_${entity}.json"
+fi

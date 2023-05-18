@@ -116,20 +116,19 @@ def populate_output_type(name, cmd):
             attach_command(game_group, cmd(deck), name=deckname)
 
 
-deck_dir = relpath("../decks")
+def get_deck_plugins(deck_dir):
+    sys.path.append(deck_dir)
+    plugins = [
+        os.path.basename(os.path.dirname(name))
+        for name in glob.glob(os.path.join(deck_dir, "*", "__init__.py"))
+    ]
+    return {
+        name: importlib.import_module(name)
+        for name in plugins
+    }
 
 
-sys.path.append(deck_dir)
-plugins = [
-    os.path.basename(os.path.dirname(name))
-    for name in glob.glob(os.path.join(deck_dir, "*", "__init__.py"))
-]
-
-
-deck_plugins = {
-    name: importlib.import_module(name)
-    for name in plugins
-}
+deck_plugins = get_deck_plugins(relpath("../decks"))
 
 
 group_cmds = {

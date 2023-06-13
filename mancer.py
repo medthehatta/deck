@@ -27,7 +27,7 @@ def mancer_upload_pils(pils):
         pil.save(buffered, format="PNG")
         x = hashlib.sha1(buffered.getvalue()).hexdigest()
         with tempfile.NamedTemporaryFile("wb") as f:
-            pil.save(f)
+            pil.save(f, format="PNG")
             remote_path = f"/var/www/files/deck/{x}.png"
             subprocess.check_call(
                 f"rsync {f.name} med@mancer.in:{remote_path}",

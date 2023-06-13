@@ -1,4 +1,10 @@
 #!/bin/bash
+
+prefix="."
+tts_prefix="/mnt/c/Users/Med/Documents/My Games/Tabletop Simulator/Saves/Saved Objects"
+mancer_prefix="/var/www/files/deck"
+
+
 while [ "$#" -gt 0 ]; do
     case "$1" in
         -h|--help)
@@ -8,6 +14,18 @@ while [ "$#" -gt 0 ]; do
         -l|--list)
             list=1
             shift
+            ;;
+        -t|--tts)
+            prefix="$tts_prefix"
+            shift
+            ;;
+        -m|--mancer)
+            prefix="$mancer_prefix"
+            shift
+            ;;
+        -p|--prefix)
+            prefix="$2"
+            shift 2
             ;;
         *)
             if [ -z "$deck" ]; then
@@ -29,5 +47,7 @@ if [ -n "$list" ] && [ -n "$deck" ]; then
 elif [ -n "$list" ]; then
     python -m cli json-file --help
 else
-    python -m cli json-file "$deck" "$entity" "/var/www/files/xfer/${deck}_${entity}.json"
+    outpath="$prefix/${deck}_${entity}.json"
+    python -m cli json-file "$deck" "$entity" "$outpath"
+    echo "$outpath" >&2
 fi

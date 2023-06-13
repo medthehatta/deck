@@ -9,12 +9,15 @@ import click
 
 from deck import Deck
 from deck import Tokens
-from mancer import mancer_pils
+from mancer import mancer_upload_pils
 from util import prefix
 import tts
 
 
 relpath = prefix(__file__)
+
+
+UPLOADER = mancer_upload_pils
 
 
 @click.group()
@@ -24,19 +27,19 @@ def cli():
 
 
 def emit_deck_json(deck):
-    return tts.game(deck.tts_json(uploader=mancer_pils))
+    return tts.game(deck.tts_json(uploader=UPLOADER))
 
 
 def emit_deck_urls(deck):
-    return deck.sheet_urls(uploader=mancer_pils)
+    return deck.sheet_urls(uploader=UPLOADER)
 
 
 def emit_token_json(token):
-    return tts.game(token.tts_json(uploader=mancer_pils))
+    return tts.game(token.tts_json(uploader=UPLOADER))
 
 
 def emit_token_urls(token):
-    return token.image_urls(uploader=mancer_pils)
+    return token.image_urls(uploader=UPLOADER)
 
 
 def url_maker_command(deck):
@@ -49,7 +52,7 @@ def url_maker_command(deck):
         raise TypeError(f"Unrecognized type: {type(deck)}")
 
     def _card_maker():
-        print(json.dumps(emitter(uploader=mancer_pils)))
+        print(json.dumps(emitter(uploader=UPLOADER)))
 
     return click.command()(_card_maker)
 

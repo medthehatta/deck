@@ -57,6 +57,21 @@ def url_maker_command(deck):
     return click.command()(_card_maker)
 
 
+def letter_url_maker_command(deck):
+
+    if isinstance(deck, Deck):
+        emitter = deck.portrait_on_letter
+    elif isinstance(deck, Tokens):
+        emitter = lambda: None
+    else:
+        raise TypeError(f"Unrecognized type: {type(deck)}")
+
+    def _card_maker():
+        print(json.dumps(emitter(uploader=UPLOADER)))
+
+    return click.command()(_card_maker)
+
+
 def json_maker_command(deck):
 
     if isinstance(deck, Deck):
@@ -138,6 +153,7 @@ group_cmds = {
     "json": json_maker_command,
     "json-file": json_file_maker_command,
     "urls": url_maker_command,
+    "letter": letter_url_maker_command,
 }
 
 

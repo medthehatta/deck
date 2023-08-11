@@ -4,6 +4,7 @@ import sys
 
 from svg import svg_string_to_pil
 import tts
+import layout
 
 
 class Deck:
@@ -46,6 +47,10 @@ class Deck:
             return ["" for _ in records]
         else:
             return [self.name(record) for record in records]
+
+    def portrait_on_letter(self, uploader):
+        sheets = layout.portrait_cards_on_letter(self.render_faces())
+        return uploader(sheets)
 
     def sheet_urls(self, uploader):
         rendered = self.render()

@@ -52,6 +52,8 @@ def entries(
     sheet="Sheet1",
     range_=None,
     indirect=None,
+    force_header=None,
+    skip_first_line=False,
 ):
     book = client.open_by_url(url)
     sheet_ = book.worksheet(sheet)
@@ -62,6 +64,12 @@ def entries(
     elif indirect:
         sheet_range = sheet_.get(indirect)[0][0]
         return entries(client, url, sheet, rng=sheet_range)
+    elif force_header:
+        rows = [dict(zip(force_header, row)) for row in sheet_.get_values()]
+        if skip_first_line:
+            return rows[1:]
+        else:
+            return rows
     else:
         return sheet_.get_all_records()
 
@@ -70,12 +78,12 @@ def gsheet(id_):
     return f"https://docs.google.com/spreadsheets/d/{id_}/edit#gid=0"
 
 
-def google_sheet_reader(url, tab="Sheet1"):
+def google_sheet_reader(url, tab="Sheet1", **kwargs):
 
     def _google_sheet_reader():
         # FIXME: Ugh, configuring the sheets client is painful.
         # Just setting it as a constant from the file for now
         client = service_login(relpath("service-account.json"))
-        return entries(client, url, sheet=tab)
+        return entries(client, url, sheet=tab, **kwargs)
 
     return _google_sheet_reader

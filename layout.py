@@ -2,6 +2,16 @@ from cytoolz import partition_all
 from PIL import Image
 
 
+def oversize_portrait_cards_on_letter(pils):
+    return layout_on_sheets_by_size(
+        pils,
+        sheet_x=8.5,
+        sheet_y=11,
+        card_x=2.8,
+        card_y=3.65,
+    )
+
+
 def portrait_cards_on_letter(pils):
     return layout_on_sheets_by_size(
         pils,
@@ -31,11 +41,11 @@ def layout_on_sheets_by_size(
 ):
     num_width = int(sheet_x / card_x)
     slop_width = sheet_x - card_x * num_width
-    xpad = slop_width / num_width
+    xpad = (slop_width / num_width) / card_x
 
     num_height = int(sheet_y / card_y)
     slop_height = sheet_y - card_y * num_height
-    ypad = slop_height / num_height
+    ypad = (slop_height / num_height) / card_y
 
     sheets = partition_all(num_width * num_height, pils)
     return [
@@ -115,7 +125,7 @@ def layout_pils(
     x2pad = xpad_ // 2
     y2pad = ypad_ // 2
     total_width = width * num_width + xpad_ * num_width
-    total_height = height * num_height + ypad_ * num_width
+    total_height = height * num_height + ypad_ * num_height
 
     output = Image.new(
         mode="RGBA",

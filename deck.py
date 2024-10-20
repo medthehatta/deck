@@ -52,6 +52,16 @@ class Deck:
         sheets = layout.portrait_cards_on_letter(self.render_faces())
         return uploader(sheets)
 
+    def oversize_portrait_on_letter(self, uploader):
+        sheets = layout.layout_on_sheets_by_size(
+            self.render_faces(),
+            sheet_x=11,
+            sheet_y=8.5,
+            card_x=3.5,
+            card_y=2.5,
+        )
+        return uploader(sheets)
+
     def sheet_urls(self, uploader):
         rendered = self.render()
         pils = tts.make_deck_pils(

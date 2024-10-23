@@ -113,6 +113,13 @@ class Rect:
     def subdivide(self, rows=1, columns=1):
         return RectSubdivisions(self, rows, columns)
 
+    def scale_at_anchor(self, anchor, percent):
+        return type(self).from_anchor_size(
+            anchor,
+            self.anchor(anchor),
+            percent/100*self.size,
+        )
+
     def __repr__(self):
         cls = type(self).__name__
         return f"{cls}.from_anchor_size('topleft', {self.topleft}, {self.size})"

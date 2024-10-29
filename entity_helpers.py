@@ -1,9 +1,4 @@
-def split_to_multiple_fields(
-    text,
-    field_name,
-    chars_per,
-    max_lines,
-):
+def split_to_multiple(text, chars_per):
     segments = []
     current_segment = []
     for word in text.split():
@@ -13,6 +8,16 @@ def split_to_multiple_fields(
             segments.append(" ".join(current_segment))
             current_segment = [word]
     segments.append(" ".join(current_segment))
+    return segments
+
+
+def split_to_multiple_fields(
+    text,
+    field_name,
+    chars_per,
+    max_lines,
+):
+    segments = split_to_multiple(text, chars_per)
 
     default = {f"{field_name}#{i}": "" for i in range(1, max_lines + 1)}
     populated = {

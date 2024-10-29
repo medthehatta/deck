@@ -21,4 +21,5 @@ dependencies = [
     "svglib>=1.5.1",
     "uwsgi>=2.0.27",
     "svgpathtools>=1.6.1",
+    "coolname>=2.2.0",
 ]

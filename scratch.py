@@ -1,5 +1,6 @@
 from pprint import pprint
 
+from coolname import generate_slug
 from svgpathtools import svg2paths
 from lxml import etree
 
@@ -10,50 +11,44 @@ from svg import svg_string_to_pil
 from rect import Rect, Point, Size
 
 
-def tree_to_foo(tree):
-    s = svg_string(tree)
-    with open("/mnt/c/Users/Med/Desktop/foo.svg", "w") as f:
-        f.write(s)
-    svg_string_to_pil(s).save("/mnt/c/Users/Med/Desktop/foo.png")
+def preview(svg, path=None, name=None):
+    path = path or "/mnt/c/Users/Med/Desktop/previews"
+    name = name or generate_slug(2)
+    png_path = f"{path}/{name}.png"
+    svg_path = f"{path}/{name}.svg"
+    ss = svg_string(svg)
+    with open(svg_path, "w") as f:
+        f.write(ss)
+    return svg_string_to_pil(ss).save(png_path)
 
 
-svg_file = "/mnt/c/Users/Med/Desktop/decks/apogee/ability.svg"
+import cli
+ap = cli.deck_plugins["apogee"]
 
 
-c = Components.from_svg_file(svg_file)
-
-tree = c.instantiate(
-    "main",
-    svg_replacements={
-        "upper": c.instantiate("narrowboi", text_replacements={"text": "sup"}),
-        "lower": c.instantiate("narrowboi", text_replacements={"text": "yo"}),
-        "icongroup": c.instantiate(
-            "icongroup",
-            svg_replacements={
-                "icon:1": c.instantiate("icon"),
-                "icon:2": c.instantiate("icon"),
-                "icon:3": c.instantiate("icon"),
-            },
-        ),
-    },
-    text_replacements={"some_text": "ehhhhhyyyyyaa"},
+fire = ap.ability(
+    "Fire!",
+    provides={"thermal": 10},
+    cooldown=1,
+    costs={"battery": 5},
+    ability_text=(
+        "Just shoot at the guy, this is only long because I want to test "
+        "the text splitting"
+    ),
 )
 
 
-def rect_row(columns):
-
-    def _(rect):
-        return rect.subdivide(rows=1, columns=columns).iter_rows_columns()
-    return _
+some_kw = ap.keyword("hi")
 
 
-tree2 = c.instantiate(
-    "main",
-    rect_replacements={
-        "icongroup": (rect_row(10), [c.instantiate("icon") for _ in range(4)]),
-    },
+laser_cannon = ap.module(
+    "Laser Cannon",
+    "Weapon",
+    "Seeker",
+    abilities=[fire],
+    tier=1,
 )
 
-tree_to_foo(tree2)
 
+preview(laser_cannon, name="laser-cannon")
 

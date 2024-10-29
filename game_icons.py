@@ -1,3 +1,5 @@
+import io
+
 from diskcache import Cache
 import requests
 

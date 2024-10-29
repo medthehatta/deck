@@ -1,0 +1,5 @@
+*.sw[lmnop]
+__pycache__
+svg/
+game_icons/
+service-account.json

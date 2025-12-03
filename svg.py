@@ -4,6 +4,7 @@ import os
 import diskcache
 from diskcache import Cache
 import cairosvg.surface
+from lxml import etree
 from PIL import Image
 
 from svglue import render_svg_string
@@ -88,6 +89,15 @@ def _svg_string_to_pil(svg):
     f = BytesIO()
     cairosvg.surface.PNGSurface(tree, f, dpi=96).finish()
     return Image.open(f)
+
+
+def svg_tree_to_pil(tree):
+    return get_or_compute(_svg_tree_to_pil, tree)
+
+
+def _svg_tree_to_pil(tree):
+    string = tree.tostring(tree, encoding=str)
+    return _svg_string_to_pil(string)
 
 
 # -- This whole bit should just be @cache.memoize on the relevant functions,

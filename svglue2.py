@@ -192,3 +192,10 @@ class Components:
 
 def svg_string(tree):
     return etree.tostring(tree, encoding=str)
+
+
+def svg_tree(string):
+    return etree.fromstring(string)
+
+
+empty = svg_tree("<svg></svg>")

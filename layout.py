@@ -1,4 +1,4 @@
-from cytoolz import partition_all
+from util import partition_all
 from PIL import Image
 
 
@@ -47,6 +47,26 @@ def layout_on_sheets_by_size(
     slop_height = sheet_y - card_y * num_height
     ypad = (slop_height / num_height) / card_y
 
+    sheets = partition_all(num_width * num_height, pils)
+    return [
+        layout_pils(
+            sheet,
+            num_width=num_width,
+            num_height=num_height,
+            xpad=xpad,
+            ypad=ypad,
+        )
+        for sheet in sheets
+    ]
+
+
+def layout_on_sheets_by_counts(
+    pils,
+    num_width,
+    num_height,
+    xpad=0,
+    ypad=0,
+):
     sheets = partition_all(num_width * num_height, pils)
     return [
         layout_pils(

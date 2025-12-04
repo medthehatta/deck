@@ -301,25 +301,3 @@ def game(objects):
         "XmlUI": "",
         "VersionNumber": "",
     }
-
-
-def make_deck_pils(face_pils, back_pil=None, back_pils=None):
-    # If we don't provide a back, use a black card
-    if not back_pil and not back_pils:
-        first_face = face_pils[0]
-        back_pil = Image.new(
-            mode=first_face.mode,
-            size=first_face.size,
-            color=0,  # black
-        )
-
-    # Passing a "single" back_pil will dupe it across all the faces
-    if back_pil and not back_pils:
-        back_pils = [back_pil] * len(face_pils)
-
-    faces = layout_pils(face_pils, num_width=10, num_height=7)
-    backs = layout_pils(back_pils, num_width=10, num_height=7)
-    return {
-        "faces": faces,
-        "backs": backs,
-    }

@@ -96,8 +96,20 @@ def svg_tree_to_pil(tree):
 
 
 def _svg_tree_to_pil(tree):
-    string = tree.tostring(tree, encoding=str)
+    string = etree.tostring(tree, encoding=str)
     return _svg_string_to_pil(string)
+
+
+def to_pil(thing):
+    if isinstance(thing, str):
+        return svg_string_to_pil(thing)
+    elif isinstance(thing, etree._Element):
+        return svg_tree_to_pil(thing)
+    elif isinstance(thing, Image):
+        return thing
+    else:
+        typ = type(thing)
+        raise TypeError(f"Do not know how to render type '{typ}' as PIL Image")
 
 
 # -- This whole bit should just be @cache.memoize on the relevant functions,

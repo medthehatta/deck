@@ -10,11 +10,11 @@ from util import partition_all
 
 class Deck:
 
-    def __init__(self, face, back, source, name=None, scale=1.0):
-        self.face = face
-        self.back = back
-        self.source = source
-        self.name = name
+    def __init__(self, face, back, source=None, name=None, scale=1.0):
+        self.face = face if callable(face) else (lambda _: face)
+        self.back = back if callable(back) else (lambda _: back)
+        self.source = source or (lambda: [None])
+        self.name = name if callable(name) else (lambda _: name)
         self.scale = scale
 
     def _face(self, record):
@@ -91,9 +91,11 @@ class Deck:
         }
 
     def tts_json(self, uploader):
+        STANDARD_CARD_HEIGHT = 350
         rendered = self.render()
         names = self.names()
         faces = rendered["faces"]
+        scale = faces[0].height / STANDARD_CARD_HEIGHT
         backs = rendered["backs"]
         num = len(faces)
         front_sheet_pils = layout.layout_on_sheets_by_counts(
@@ -116,7 +118,7 @@ class Deck:
                 back_urls[0],
                 num_cards=num,
                 card_names=name_batches[0],
-                scale=self.scale,
+                scale=scale,
             )
 
         else:
@@ -131,7 +133,7 @@ class Deck:
                         back_url,
                         num_cards=num_cards,
                         card_names=card_names,
-                        scale=self.scale,
+                        scale=scale,
                     )
                 )
 
@@ -140,14 +142,14 @@ class Deck:
 
 class Tokens:
 
-    def __init__(self, face, source, name=None, scale=1.0):
-        self.face = face
-        self.source = source
-        self.name = name
+    def __init__(self, face, source=None, name=None, scale=1.0):
+        self.face = face if callable(face) else (lambda _: face)
+        self.source = source or (lambda: [None])
+        self.name = name if callable(name) else (lambda _: name)
         self.scale = scale
 
     def _face(self, record):
-        return self.face(record)
+        return to_pil(self.face(record))
 
     def preview_face(self):
         return self._face(self.source()[0])
@@ -172,17 +174,30 @@ class Tokens:
         return uploader(pils)
 
     def tts_json(self, uploader):
+        STANDARD_CARD_HEIGHT = 350
         pils = self.render()
         names = self.names()
         urls = uploader(pils)
-        return tts.bag_of([
-            tts.token(
-                url,
-                nickname=name,
-                scale=self.scale,
+        if len(urls) == 1:
+            return tts.token(
+                urls[0],
+                nickname=names[0],
+                scale=pils[0].height / STANDARD_CARD_HEIGHT,
             )
-            for (name, url) in zip(names, urls)
-        ])
+        else:
+            return tts.bag_of([
+                tts.token(
+                    url,
+                    nickname=name,
+                    scale=pil.height / STANDARD_CARD_HEIGHT,
+                )
+                for (name, url, pil) in zip(names, urls, pils)
+            ])
+
+
+def dbg(x):
+    print(x)
+    return x
 
 
 SvgDeck = Deck
